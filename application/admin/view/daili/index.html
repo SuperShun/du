@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>代理管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .stats-card {
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .editable {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .editable:hover {
+            background-color: #f0f0f0;
+        }
+        .editing {
+            padding: 0 !important;
+        }
+        .editing input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <!-- 统计卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stats-card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">代理总数</h6>
+                    <h3 class="card-text">{$totalDaili|default='0'}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">鱼苗总数</h6>
+                    <h3 class="card-text">{$totalFish|default='0'}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">今日新增代理</h6>
+                    <h3 class="card-text">{$todayNew|default='0'}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 代理表单 -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">新增代理</h5>
+        </div>
+        <div class="card-body">
+            <form id="addDailiForm" class="row g-3" action="/admin/daili/add" method="post">
+                <div class="col-md-4">
+                    <label class="form-label">电报ID</label>
+                    <input type="text" class="form-control" name="tguid" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">电报用户名</label>
+                    <input type="text" class="form-control" name="username">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">电报昵称</label>
+                    <input type="text" class="form-control" name="fullName">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">加入时间</label>
+                    <input type="text" class="form-control" name="time">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">代理备注</label>
+                    <input type="text" class="form-control" name="remark">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 代理列表 -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">代理列表</h5>
+            <div>
+                <input type="text" class="form-control form-control-sm d-inline-block w-auto" id="searchInput" placeholder="搜索...">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>电报ID</th>
+                            <th>电报用户名</th>
+                            <th>电报昵称</th>
+                            <th>鱼苗数量</th>
+                            <th>加入时间</th>
+                            <th>备注</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="dailiData" id="daili"}
+                        <tr data-id="{$daili.id}">
+                            <td>{$daili.id}</td>
+                            <td class="editable" data-field="tguid" ondblclick="makeEditable(this)">{$daili.tguid}</td>
+                            <td class="editable" data-field="username" ondblclick="makeEditable(this)">{$daili.username}</td>
+                            <td class="editable" data-field="fullName" ondblclick="makeEditable(this)">{$daili.fullName}</td>
+                            <td>{$daili.fishnumber}</td>
+                            <td class="editable" data-field="time" ondblclick="makeEditable(this)">{$daili.time}</td>
+                            <td class="editable" data-field="remark" ondblclick="makeEditable(this)">{$daili.remark}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteDaili({$daili.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+// 显示成功消息
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
+// 显示错误消息
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: '错误',
+        text: message
+    });
+}
+
+// 防止重复
+let isSubmitting = false;
+
+// 表单提交
+document.getElementById('addDailiForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (isSubmitting) return;
+    
+    const saveBtn = document.getElementById('saveBtn');
+    const originalText = saveBtn.innerHTML;
+    
+    isSubmitting = true;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+    
+    const formData = new FormData(this);
+    
+    if (!formData.get('time')) {
+        const now = new Date();
+        formData.set('time', now.toISOString().slice(0, 19).replace('T', ' '));
+    }
+    
+    axios.post('/admin/daili/add', Object.fromEntries(formData))
+        .then(response => {
+            if (response.data.code === 1) {
+                showSuccess(response.data.msg || '添加成功');
+                this.reset();
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                throw new Error(response.data.msg || '添加失败');
+            }
+        })
+        .catch(error => {
+            showError(error.response?.data?.msg || error.message);
+        })
+        .finally(() => {
+            isSubmitting = false;
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        });
+});
+
+// 单元格编辑
+function makeEditable(element) {
+    if (element.classList.contains('editing')) return;
+    
+    const originalValue = element.textContent;
+    const field = element.dataset.field;
+    const id = element.parentNode.dataset.id;
+    
+    element.classList.add('editing');
+    
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.value = originalValue;
+    input.classList.add('form-control', 'form-control-sm');
+    
+    function save() {
+        const newValue = input.value;
+        
+        axios.post('/admin/daili/update', {
+            id: id,
+            field: field,
+            value: newValue
+        })
+        .then(response => {
+            if (response.data.code === 1) {
+                element.textContent = newValue;
+                showSuccess('更新成功');
+            } else {
+                throw new Error(response.data.msg || '更新失败');
+            }
+        })
+        .catch(error => {
+            element.textContent = originalValue;
+            showError(error.response?.data?.msg || error.message);
+        })
+        .finally(() => {
+            element.classList.remove('editing');
+        });
+    }
+    
+    input.addEventListener('blur', save);
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            save();
+        }
+    });
+    
+    element.textContent = '';
+    element.appendChild(input);
+    input.focus();
+}
+
+// 删除代理
+function deleteDaili(id) {
+    Swal.fire({
+        title: '确认删除',
+        text: '此操作不可恢复！',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post('/admin/daili/del', { id: id })
+                .then(response => {
+                    if (response.data.code === 1) {
+                        showSuccess('删除成功');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        throw new Error(response.data.msg || '删除失败');
+                    }
+                })
+                .catch(error => showError(error.response?.data?.msg || error.message));
+        }
+    });
+}
+
+// 搜索功能
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchText = e.target.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const rowContent = Array.from(cells)
+            .map(cell => cell.textContent.trim())
+            .join(' ')
+            .toLowerCase();
+            
+        row.style.display = rowContent.includes(searchText) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

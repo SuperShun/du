@@ -1,0 +1,16 @@
+<?php 
+return array (
+  'eq' => 
+  array (
+    0 => 'mobile',
+    1 => 'pc',
+  ),
+  'sku_price' => '1',
+  'sales' => '1',
+  'stock' => '1',
+  'blog' => '0',
+  'gg_status' => '1',
+  'gonggao' => '<div class="title" style="color: rgb(44, 62, 80); font-size: 24px; font-weight: bold; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgb(52, 152, 219); font-family: Arial, sans-serif; text-wrap: wrap;">🛍️ 下单须知</div><ul class="notice-list" style="list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; color: rgb(0, 0, 0); font-family: Arial, sans-serif; font-size: medium; text-wrap: wrap;"><li class="notice-item" style="margin: 15px 0px; padding: 15px; border-left: 4px solid rgb(52, 152, 219); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 5px; transition: transform 0.2s ease 0s;"><span class="highlight" style="color: rgb(41, 128, 185); font-weight: bold;">支付方式：</span>&nbsp;因支付通道风控，本站仅支持&nbsp;<span class="warning" style="color: rgb(231, 76, 60); font-weight: bold;">USDT</span>&nbsp;支付</li><li class="notice-item" style="margin: 15px 0px; padding: 15px; border-left: 4px solid rgb(52, 152, 219); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 5px; transition: transform 0.2s ease 0s;"><span class="highlight" style="color: rgb(41, 128, 185); font-weight: bold;">订单时效：</span>&nbsp;所有商品均可自助下单提货！卡密下单后请在&nbsp;<span class="warning" style="color: rgb(231, 76, 60); font-weight: bold;">三小时内核销完成</span>！超时问题客服不处理，不接受退款，不接受扯皮！</li><li class="notice-item" style="margin: 15px 0px; padding: 15px; border-left: 4px solid rgb(52, 152, 219); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 5px; transition: transform 0.2s ease 0s;"><span class="highlight" style="color: rgb(41, 128, 185); font-weight: bold;">支付说明：</span>&nbsp;所有卡密只接受&nbsp;<span class="warning" style="color: rgb(231, 76, 60); font-weight: bold;">USDT虚拟币（TRC20）</span>付款，不收人民币！购卡请自备USDT，虚拟币双向匿名。</li><li class="notice-item" style="margin: 15px 0px; padding: 15px; border-left: 4px solid rgb(52, 152, 219); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 5px; transition: transform 0.2s ease 0s;"><span class="highlight" style="color: rgb(41, 128, 185); font-weight: bold;">商品类型：</span>&nbsp;接码平台内实卡API短信在线接收验证码、TG会员充代充、成品号等出售。</li><li class="notice-item" style="margin: 15px 0px; padding: 15px; border-left: 4px solid rgb(52, 152, 219); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 5px; transition: transform 0.2s ease 0s;"><span class="highlight" style="color: rgb(41, 128, 185); font-weight: bold;">商品保障：</span>&nbsp;本站账号类API类商品均包首登，一经出售去除库存绝无二次出售！</li></ul><div class="contact" style="margin-top: 20px; padding: 15px; background-color: rgb(241, 196, 15); border-radius: 8px; color: rgb(52, 73, 94); font-family: Arial, sans-serif; font-size: medium; text-wrap: wrap;"><strong>📞 客服联系方式：</strong><br/>
+ 有任何问题请及时联系客服进行对接 TG：<a href="https://t.me/{TG}" target="_blank" class="tg-link" style="display: inline-block; background-color: #2980b9; color: white; padding: 3px 10px; border-radius: 15px; text-decoration: none; font-weight: bold; transition: all 0.3s ease;">@{TG}&nbsp;</a><br/> <span class="warning" style="color: rgb(231, 76, 60); font-weight: bold;">⚠️ 注意：本工作室只使用Telegram，微信QQ等其他平台全部为冒充！谨防上当受骗！</span></div>',
+)
+?>

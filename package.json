@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mysql2": "^3.11.4",
+    "node-fetch": "^2.7.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "tronweb": "^6.0.0"
+  }
+}

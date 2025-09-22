@@ -1,0 +1,125 @@
+扫码支付TRX授权 搭建教程 配合域名防封脚本使用 
+
+原理：通过github提供的免费域名进行防封操作，因为github的权重比较高也不会马上封禁，并且我们可以生成非常多的github域名，每次只需要更换用户名就可以得到新的域名。
+
+逻辑：设置一个主域名，客户扫码进入主域名，由主域名将客户带到github的域名中。（具体可以看python代码，全开源）
+
+缺点：每次只能允许一个客户同时访问，因为进入第二次之后域名就会被封了！
+
+我们只需要准备一个 主域名就行了  将域名设置为二维码 （比如使用草料二维码） 再将二维码PS到钱包的收款码发给客户扫
+
+域名：qqaazzxx.shop  已经解析好了
+
+github注册链接：https://github.com/signup  我已经注册好了 我就不再注册了。
+
+注册好了之后，我们到仓库中上传我们的 扫码盗U 源码，利用github进行托管
+
+1.新建一个仓库，名称随便 在这里我是使用 transfer 然后点击确定
+
+2.上传我们的源码，脚本不需要上传，直接拖进去就可以了，等待上传完毕点击确定  ctrl 多选文件
+
+上传完成后修改一下 index.HTML 的配置   必须填写有效的地址否则会报错
+
+3.点击设置  开启 Pages  选择main 目录   确定之后稍等 几分钟 就能看到搭建链接了 
+
+还没出现链接 我们可以先搭建 脚本。
+
+
+
+https://aen7dz1.github.io/transfer/   我们可以看看   设置了 电脑打开显示空白 只能在 DAPP 环境下打开
+我们的托管已经搭建好了  GitHub 提供了一个免费的域名 给我们 
+
+aen7dz1 就是我们的用户名  当这个域名被封之后，我们修改用户名 又可以得到一个新的域名 原理就是这样
+
+假设我们修改用户名为abc123456  那么我们域名就会自动更变为https://abc123456.github.io/transfer/
+
+
+
+创建一个目录存放脚本  服务器需要安装 Nginx 
+建议使用 Ubuntu 系统 自带python 
+
+进入终端  
+
+1.切换到root用户（如果已是root权限请忽略）
+sudo -i
+
+2.安装虚拟环境模块（如果已经安装请忽略）
+sudo apt install python3-venv
+
+3.进入脚本目录
+cd 目录
+例如：cd /www/wwwroot/guthub
+
+3.创建虚拟环境目录 名称为hj（如果已经创建请忽略）
+python3 -m venv hj
+
+4.进入虚拟环境目录 名称为hj
+source hj/bin/activate
+
+5.安装谷歌浏览器  安装好了 之后继续安装漪蓝裤
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+
+6.安装脚本的依赖库
+pip install python-dotenv selenium webdriver-manager flask flask-cors
+
+7.启动一个会话
+tmux new -s myscript
+
+8.启动脚本
+python github.py  在启动之前先设置我们的  登录账号密码和仓库名字
+
+重连会话命令：tmux attach -t myscript
+关闭程序命令：CTRL+C
+
+9.给脚本设置一个主域名：添加站点-申请SSL-反向代理
+
+脚本启动之前请先设置好你的github账号密码
+因为github不提供 修改用户名的api  所以只能是 模拟点击
+
+这里看到 他修改了用户名 为qh71vgu6  所以新的域名为 https://qh71vgu6.github.io/transfer/  之前的域名就不管用了。
+
+问题稍等我修复  后续给你们发的 不会有错误
+
+接下来我们还要给他设置一个域名 
+ http://127.0.0.1:1995
+
+
+域名：qqaazzxx.shop  已经解析好了
+
+
+先申请ssl 在申请反向代理 
+
+
+到这里就搭建好了  ， 让客户访问 qqaazzxx.shop 就可以了  qqaazzxx.shop 会将客户带向 https://qh71vgu6.github.io/transfer/ 
+
+ qqaazzxx.shop 也不会被封禁 ，
+
+
+搭建结束
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

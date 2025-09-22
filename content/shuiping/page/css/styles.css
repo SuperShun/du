@@ -1,0 +1,158 @@
+    .count {
+        border: 1.5px solid #e9ecef;
+        display: inline-block;
+        border-radius: .25rem;
+    }
+
+    .count__ctrl {
+        padding: 5px 15px;
+        background: #e9ecef;
+    }
+
+    .count__num {
+        padding: 0 10px;
+    }
+
+    .goods-detail img{
+        max-width: 100%;
+    }
+
+
+    .form div.form-group div.email-input {
+        margin-bottom: 10px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap
+    }
+
+
+    .form div.form-group div.email-input button.subscribe-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #fff
+    }
+
+
+    .form div.form-group div.subscribe-tos span {
+        display: block;
+        font-size: 14px;
+        color: #010101;
+        line-height: 1.4;
+        font-weight: 400
+    }
+
+    .form div.form-group div.subscribe-tos span a {
+        color: #067aff;
+        font-weight: 500;
+        text-decoration: none
+    }
+    .pay-type, .select-specs{
+        font-size: 13px;
+        line-height: 13px;
+        border: 1.5px solid rgb(167 167 167 / 20%);
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        font-weight: 500;
+        color: #010101;
+        padding: 5px 16px;
+        border-radius: 1px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+
+        -webkit-box-shadow: 0 1px 1px rgba(32,35,51,.04), 0 2px 4px rgba(32,35,51,.02)!important;
+        box-shadow: 4px 4px 1px -1px rgba(32,35,51,.04), 0 2px 4px rgba(32,35,51,.02)!important;
+    }
+    .select-specs{
+        padding: 8px 15px;
+    }
+    .pay-type.disabled{
+        border-color: #ddd;
+        color: #060606;
+        background: #f3f3f3;
+        -webkit-box-shadow: 0 1px 1px rgba(32,35,51,.04), 0 2px 4px rgba(32,35,51,.02);
+        box-shadow: 4px 4px 1px -1px rgba(32,35,51,.04), 0 2px 4px rgba(32,35,51,.02);
+    }
+    .btn.disabled{
+        color: #8b8b8b;
+    }
+    .pay-type.active, .select-specs.active{
+        border: 2px solid #4aadff;
+        padding: 4px 15px!important;
+        /*background: #4aadff;*/
+        /*color: #fff;*/
+    }
+    .select-specs.active{
+        border: 2px solid #4aadff;
+        padding: 8px 14px!important;
+    }
+    {if condition="$goods.init_price == 0"}
+    #pay-type-box{
+        display: none;
+    }
+    {/if}
+    
+
+    #lean_overlay {
+        position: fixed;
+        z-index: 10000;
+        top: 0px;
+        left: 0px;
+        height:100%;
+        width:100%;
+        background: #000;
+        display: none;
+    }
+    #alert-html{
+        background: #fff;
+        display: none;
+        position: fixed;
+        opacity: 1;
+        z-index: 11000;
+        left: 50%;
+        width: 800px;
+        top: 10%!important;
+        height: auto;
+        border-radius: 6px;
+    }
+    #alert-html .content img{
+        max-width: 100%;
+    }
+    #alert-html .content{
+        min-height: unset;
+        word-break: break-all;
+    }
+
+    @media screen and (max-width: 700px) {
+
+        /* 在这里写CSS样式，当屏幕宽度小于700px时生效 */
+        #alert-html{
+            background: #fff;
+            display: none;
+            position: fixed;
+            opacity: 1;
+            z-index: 11000;
+            left: 50%;
+            max-width: 96%;
+            top: 10%!important;
+            border-radius: 6px;
+        }
+    }
+
+
+    .modal_close{
+        text-align: center;
+        background: #495057;
+        color: #fff;
+        padding: 14px;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        cursor: pointer;
+    }
+

